@@ -1,48 +1,40 @@
 function getMatchingRoutes (routes, location) {
   var matchingRoutes = [];
-  for (var route in routes) {
-    if (routes.hasOwnProperty(route)) {
-      if (routes[route].matches(location)) {
-        matchingRoutes.push(routes[route].name);
-      }
+
+  each(routes, function (route) {
+    if (route.matches(location)) {
+      matchingRoutes.push(route.name);
     }
-  }
+  });
+
   return matchingRoutes;
 }
 
 function checkRoutes () {
-  var ctx = this.context || null;
-
   var matchingRoutes = getMatchingRoutes(this.routes, this.location);
-  var matchingRoute;
-
+  var ctx = this.context || null;
+  var activeRoutes = [];
   var toAdd = [];
   var toRemove = [];
   var toUpdate = [];
 
-  var activeRoutes = [];
-  var activeRoute;
-  var i;
-
   // Find obsolete routes
-  for (i = 0; i < this.activeRoutes.length; i++) {
-    activeRoute = this.activeRoutes[i];
+  each(this.activeRoutes, function (activeRoute) {
     if (matchingRoutes.indexOf(activeRoute) !== -1) {
       activeRoutes.push(activeRoute);
       toUpdate.push(activeRoute);
     } else {
       toRemove.push(activeRoute);
     }
-  }
+  });
 
   // Find new active routes
-  for (i = 0; i < matchingRoutes.length; i++) {
-    matchingRoute = matchingRoutes[i];
+  each(matchingRoutes, function (matchingRoute) {
     if (activeRoutes.indexOf(matchingRoute) === -1) {
       activeRoutes.push(matchingRoute);
       toAdd.push(matchingRoute);
     }
-  }
+  });
 
   this.activeRoutes = activeRoutes;
 
@@ -51,7 +43,7 @@ function checkRoutes () {
     if (toUpdate.length) {
       this.onRoute.call(ctx, new RouteEvent({
         type: 'routechange',
-        routes: toUpdate.map(function (name) {
+        routes: map(toUpdate, function (name) {
           return {
             name: name,
             params: [1, 2]
@@ -64,7 +56,7 @@ function checkRoutes () {
     if (toRemove.length) {
       this.onRoute.call(ctx, new RouteEvent({
         type: 'routeend',
-        routes: toRemove.map(function (name) {
+        routes: map(toRemove, function (name) {
           return {
             name: name,
             params: [1, 2]
@@ -77,7 +69,7 @@ function checkRoutes () {
     if (toAdd.length) {
       this.onRoute.call(ctx, new RouteEvent({
         type: 'routestart',
-        routes: toAdd.map(function (name) {
+        routes: map(toAdd, function (name) {
           return {
             name: name,
             params: [1, 2]
