@@ -5,9 +5,5 @@
  */
 
 function RouteEvent (attrs) {
-  for (var key in attrs) {
-    if (attrs.hasOwnProperty(key)) {
-      this[key] = attrs[key];
-    }
-  }
+  extend(this, attrs);
 }

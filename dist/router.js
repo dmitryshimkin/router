@@ -1,3 +1,10 @@
+function extend (target, obj) {
+  each(obj, function (value, key) {
+    target[key] = value;
+  });
+  return target;
+}
+
 function each (arg, fn, ctx) {
   if ('length' in arg) {
     for (var i = 0, len = arg.length; i < len; i++) {
@@ -61,11 +68,7 @@ Route.prototype.matches = function RouteMatches (location) {
  */
 
 function RouteEvent (attrs) {
-  for (var key in attrs) {
-    if (attrs.hasOwnProperty(key)) {
-      this[key] = attrs[key];
-    }
-  }
+  extend(this, attrs);
 }
 
 function getMatchingRoutes (routes, location) {
