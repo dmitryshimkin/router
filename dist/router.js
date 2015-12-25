@@ -59,9 +59,7 @@
    */
 
   Route.prototype.matches = function RouteMatches (location) {
-    var match = location.match(this.pattern);
-    console.log(this.pattern, location, match);
-    return match;
+    return location.match(this.pattern);
   };
 
   /**
@@ -134,8 +132,7 @@
           type: 'routeend',
           routes: map(toRemove, function (name) {
             return {
-              name: name,
-              params: [1, 2]
+              name: name
             };
           })
         }));

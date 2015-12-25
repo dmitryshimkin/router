@@ -58,8 +58,7 @@ function checkRoutes () {
         type: 'routeend',
         routes: map(toRemove, function (name) {
           return {
-            name: name,
-            params: [1, 2]
+            name: name
           };
         })
       }));

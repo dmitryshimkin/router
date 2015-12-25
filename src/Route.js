@@ -16,7 +16,5 @@ function Route (name, pattern) {
  */
 
 Route.prototype.matches = function RouteMatches (location) {
-  var match = location.match(this.pattern);
-  console.log(this.pattern, location, match);
-  return match;
+  return location.match(this.pattern);
 };
