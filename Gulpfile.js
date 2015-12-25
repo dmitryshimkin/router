@@ -1,19 +1,24 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
+var indent = require('gulp-indent');
 var rename = require('gulp-rename');
 var sizereport = require('gulp-sizereport');
 var uglify = require('gulp-uglify');
+var wrap = require('gulp-wrap');
 
 gulp.task('scripts', function() {
   var files = [
     'src/utils.js',
     'src/Route.js',
     'src/RouteEvent.js',
-    'src/Router.js'
+    'src/Router.js',
+    'src/export.js'
   ];
 
   return gulp.src(files)
     .pipe(concat('router.js'))
+    .pipe(indent())
+    .pipe(wrap(';(function (win) {\n  \'use strict\';\n\n<%= contents %>}(this));\n'))
     .pipe(gulp.dest('./dist/'));
 });
 
