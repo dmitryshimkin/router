@@ -46,7 +46,7 @@ function checkRoutes () {
         routes: map(toUpdate, function (name) {
           return {
             name: name,
-            params: [1, 2]
+            params: []
           };
         })
       }));
@@ -71,7 +71,7 @@ function checkRoutes () {
         routes: map(toAdd, function (name) {
           return {
             name: name,
-            params: [1, 2]
+            params: []
           };
         })
       }));
