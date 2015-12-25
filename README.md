@@ -1,4 +1,4 @@
-router
+Router
 ======
 
-Client-side router
+Tiny client-side router.
