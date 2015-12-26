@@ -93,6 +93,8 @@ function Router () {
 Router.prototype.addRoute = function addRoute (name, pattern) {
   if (!this.routes[name]) {
     this.routes[name] = new Route(name, pattern);
+  } else {
+    warn('Route `' + name + '` is already added');
   }
 };
 

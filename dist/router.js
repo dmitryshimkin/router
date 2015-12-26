@@ -1,12 +1,30 @@
 ;(function (win) {
   'use strict';
 
+  /**
+   * Extends given target object with another object
+   * @param target {Object}
+   * @param obj {Object}
+   * @returns {Object}
+   * @private
+   */
+
   function extend (target, obj) {
     each(obj, function (value, key) {
       target[key] = value;
     });
     return target;
   }
+
+  /**
+   * Iterates through all properties in object and invokes
+   * given callback for each property.
+   * @param arg {Object|Array}
+   * @param fn {Function}
+   * @param ctx {Object} Context for the callback
+   * @returns {Object|Array}
+   * @private
+   */
 
   function each (arg, fn, ctx) {
     if ('length' in arg) {
@@ -23,6 +41,14 @@
     return arg;
   }
 
+  /**
+   * @param arr {Array}
+   * @param fn {Function}
+   * @param ctx {Object} Context for the callback
+   * @returns {Array}
+   * @private
+   */
+
   function map (arr, fn, ctx) {
     var result = new Array(arr.length);
     for (var i = 0, len = arr.length; i < len; i++) {
@@ -31,14 +57,17 @@
     return result;
   }
 
-  function filter (arr, fn, ctx) {
-    var result = [];
-    for (var i = 0, len = arr.length; i < len; i++) {
-      if (fn.call(ctx, arr[i], i)) {
-        result.push(arr[i]);
-      }
+  /**
+   * Prints warning on console.
+   * @param msg {String}
+   * @private
+   */
+
+  function warn (msg) {
+    try {
+      console.warn(msg);
+    } catch (ex) {
     }
-    return [];
   }
 
   /**
@@ -120,7 +149,7 @@
           routes: map(toUpdate, function (name) {
             return {
               name: name,
-              params: [1, 2]
+              params: []
             };
           })
         }));
@@ -145,7 +174,7 @@
           routes: map(toAdd, function (name) {
             return {
               name: name,
-              params: [1, 2]
+              params: []
             };
           })
         }));
@@ -167,6 +196,8 @@
   Router.prototype.addRoute = function addRoute (name, pattern) {
     if (!this.routes[name]) {
       this.routes[name] = new Route(name, pattern);
+    } else {
+      warn('Route `' + name + '` is already added');
     }
   };
 

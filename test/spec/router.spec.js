@@ -12,21 +12,6 @@ describe('Router', function () {
     });
   });
 
-  describe('Location', function () {
-    it('should have empty location by default', function () {
-      var router = new Router();
-      expect(router.getLocation()).toBe('');
-    });
-
-    describe('setLocation', function () {
-      it('should update current location of the router', function () {
-        var router = new Router();
-        router.setLocation('/products/123');
-        expect(router.getLocation()).toBe('/products/123');
-      });
-    });
-  });
-
   describe('onRoute', function () {
     describe('routestart', function () {
       it('should be called on location change for all routes that didn\'t match to previous location but do match to new location', function () {
@@ -168,9 +153,109 @@ describe('Router', function () {
     });
   });
 
-  // @todo повторный setLocation
+  describe('addRoute', function () {
+    it('should add given route', function () {
+      var router = new Router();
+      var onRouteStart = jasmine.createSpy('onRouteStart');
+      var evt;
+
+      router.addRoute('A1', /^aa/);
+      router.addRoute('B', /^b/);
+
+      router.onRoute = function (evt) {
+        if (evt.type === 'routestart') {
+          onRouteStart.apply(this, arguments);
+        }
+      };
+
+      router.setLocation('aa');
+      evt = onRouteStart.calls.argsFor(0)[0];
+
+      expect(onRouteStart.calls.count()).toBe(1);
+      expect(evt.routes.length).toBe(1);
+      expect(evt.routes[0].name).toBe('A1');
+
+      router.addRoute('A2', /^aaa/);
+      expect(onRouteStart.calls.count()).toBe(1);
+
+      router.setLocation('aaa');
+      evt = onRouteStart.calls.argsFor(1)[0];
+
+      expect(onRouteStart.calls.count()).toBe(2);
+      expect(evt.routes.length).toBe(1);
+      expect(evt.routes[0].name).toBe('A2');
+    });
+
+    it('should be ignored if given route is already added', function () {
+      var router = new Router();
+      var onRouteStart = jasmine.createSpy('onRouteStart');
+      var evt;
+
+      router.addRoute('A1', /^aa/);
+      router.addRoute('B', /^b/);
+
+      router.onRoute = function (evt) {
+        if (evt.type === 'routestart') {
+          onRouteStart.apply(this, arguments);
+        }
+      };
+
+      router.setLocation('aa');
+      evt = onRouteStart.calls.argsFor(0)[0];
+
+      expect(onRouteStart.calls.count()).toBe(1);
+      expect(evt.routes.length).toBe(1);
+      expect(evt.routes[0].name).toBe('A1');
+
+      router.addRoute('A1', /^aaa/);
+      expect(onRouteStart.calls.count()).toBe(1);
+
+      router.setLocation('aaa');
+      expect(onRouteStart.calls.count()).toBe(1);
+    });
+  });
+
+  describe('Location', function () {
+    it('should have empty location by default', function () {
+      var router = new Router();
+      expect(router.getLocation()).toBe('');
+    });
+
+    describe('setLocation', function () {
+      it('should update current location of the router', function () {
+        var router = new Router();
+        router.setLocation('/products/123');
+        expect(router.getLocation()).toBe('/products/123');
+      });
+
+      it('should be ignored when called with the same location', function () {
+        var router = new Router();
+        var onRouteChange = jasmine.createSpy('onRouteChange');
+
+        router.addRoute('A1', /^aa/);
+        router.addRoute('A2', /^aaa/);
+        router.addRoute('B', /^b/);
+
+        router.onRoute = function (evt) {
+          if (evt.type === 'routechange') {
+            onRouteChange.apply(this, arguments);
+          }
+        };
+
+        router.setLocation('aa');
+        router.setLocation('aaa');
+        expect(onRouteChange.calls.count()).toBe(1);
+
+        router.setLocation('aaa');
+        expect(onRouteChange.calls.count()).toBe(1);
+      });
+    });
+  });
+
+  // @todo повторное добавление роута
 
   // @todo параметры
   // @todo change только при смене параметров
   // @todo очередь
+  // @todo добавление роута в onRoute
 });
