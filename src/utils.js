@@ -39,22 +39,6 @@ function each (arg, fn, ctx) {
 }
 
 /**
- * @param arr {Array}
- * @param fn {Function}
- * @param ctx {Object} Context for the callback
- * @returns {Array}
- * @private
- */
-
-function map (arr, fn, ctx) {
-  var result = new Array(arr.length);
-  for (var i = 0, len = arr.length; i < len; i++) {
-    result[i] = fn.call(ctx, arr[i], i);
-  }
-  return result;
-}
-
-/**
  * Prints warning on console.
  * @param msg {String}
  * @private

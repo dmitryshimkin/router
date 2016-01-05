@@ -14,12 +14,30 @@
       var router = new Router();
 
       router.onRoute = function (evt) {
-        //console.log('onRoute', evt);
+        console.log('onRoute', evt);
+        if (evt.routes.length) {
+          console.log(evt.routes[0].name);
+          console.log(evt.routes[0].params);
+        }
       };
 
-      router.addRoute('ok', '/ok');
+      router.addRoute('PROJECT', /\/project\/(.+)/);
 
-      router.setLocation('/ok');
+      console.log('');
+      console.log('SET LOCATION', '/project/1');
+      router.setLocation('/project/1');
+
+      console.log('');
+      console.log('SET LOCATION', '/project/2');
+      router.setLocation('/project/2');
+
+      console.log('');
+      console.log('SET LOCATION', '/project/3');
+      router.setLocation('/project/3');
+
+      console.log('');
+      console.log('SET LOCATION', '/project');
+      router.setLocation('/project');
     </script>
   </body>
 </html>
