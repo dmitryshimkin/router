@@ -17,14 +17,14 @@ describe('Router', function () {
       it('should be called on location change for all routes that didn\'t match to previous location but do match to new location', function () {
         var router = new Router();
         var onRouteStart = jasmine.createSpy('onRouteStart');
-        var evt;
+        var routeEvent;
 
         router.addRoute('A1', /^a$/);
         router.addRoute('A2', /^a/);
         router.addRoute('B', /^b/);
 
-        router.onRoute = function (evt) {
-          if (evt.type === 'routestart') {
+        router.onRoute = function (routeEvent) {
+          if (routeEvent.type === 'routestart') {
             onRouteStart.apply(this, arguments);
           }
         };
@@ -35,11 +35,11 @@ describe('Router', function () {
 
         // Location starts to match to "A1" and "A2", so onRouteStart is called
         router.setLocation('a');
-        evt = onRouteStart.calls.argsFor(0)[0];
+        routeEvent = onRouteStart.calls.argsFor(0)[0];
 
         expect(onRouteStart.calls.count()).toBe(1);
-        expect(evt.type).toBe('routestart');
-        expect(evt.routes).toEqual([
+        expect(routeEvent.type).toBe('routestart');
+        expect(routeEvent.routes).toEqual([
           {
             name: 'A1',
             params: []
@@ -57,11 +57,11 @@ describe('Router', function () {
 
         // Location starts to match to "B", so onRouteStart is called again
         router.setLocation('b');
-        evt = onRouteStart.calls.argsFor(1)[0];
+        routeEvent = onRouteStart.calls.argsFor(1)[0];
 
         expect(onRouteStart.calls.count()).toBe(2);
-        expect(evt.type).toBe('routestart');
-        expect(evt.routes).toEqual([{
+        expect(routeEvent.type).toBe('routestart');
+        expect(routeEvent.routes).toEqual([{
           name: 'B',
           params: []
         }]);
@@ -72,14 +72,14 @@ describe('Router', function () {
       it('should be called on location change for all routes that matched to previous location and still do match to new location', function () {
         var router = new Router();
         var onRouteChange = jasmine.createSpy('onRouteChange');
-        var evt;
+        var routeEvent;
 
         router.addRoute('A1', /^aa/);
         router.addRoute('A2', /^aaa/);
         router.addRoute('B', /^b/);
 
-        router.onRoute = function (evt) {
-          if (evt.type === 'routechange') {
+        router.onRoute = function (routeEvent) {
+          if (routeEvent.type === 'routechange') {
             onRouteChange.apply(this, arguments);
           }
         };
@@ -88,20 +88,20 @@ describe('Router', function () {
         expect(onRouteChange.calls.count()).toBe(0);
 
         router.setLocation('aaa');
-        evt = onRouteChange.calls.argsFor(0)[0];
+        routeEvent = onRouteChange.calls.argsFor(0)[0];
 
         expect(onRouteChange.calls.count()).toBe(1);
-        expect(evt.type).toBe('routechange');
-        expect(evt.routes).toEqual([
+        expect(routeEvent.type).toBe('routechange');
+        expect(routeEvent.routes).toEqual([
           { name: 'A1', params: [] }
         ]);
 
         router.setLocation('aaaa');
-        evt = onRouteChange.calls.argsFor(1)[0];
+        routeEvent = onRouteChange.calls.argsFor(1)[0];
 
         expect(onRouteChange.calls.count()).toBe(2);
-        expect(evt.type).toBe('routechange');
-        expect(evt.routes).toEqual([
+        expect(routeEvent.type).toBe('routechange');
+        expect(routeEvent.routes).toEqual([
           { name: 'A1', params: [] },
           { name: 'A2', params: [] }
         ]);
@@ -112,14 +112,14 @@ describe('Router', function () {
       it('should be called on location change for all routes that matched to previous location but don\'t match to new location', function () {
         var router = new Router();
         var onRouteEnd = jasmine.createSpy('onRouteEnd');
-        var evt;
+        var routeEvent;
 
         router.addRoute('A1', /^a$/);
         router.addRoute('A2', /^a/);
         router.addRoute('B', /^b/);
 
-        router.onRoute = function (evt) {
-          if (evt.type === 'routeend') {
+        router.onRoute = function (routeEvent) {
+          if (routeEvent.type === 'routeend') {
             onRouteEnd.apply(this, arguments);
           }
         };
@@ -128,22 +128,22 @@ describe('Router', function () {
         expect(onRouteEnd.calls.count()).toBe(0);
 
         router.setLocation('b');
-        evt = onRouteEnd.calls.argsFor(0)[0];
+        routeEvent = onRouteEnd.calls.argsFor(0)[0];
 
         expect(onRouteEnd.calls.count()).toBe(1);
-        expect(evt.type).toBe('routeend');
-        expect(evt.routes).toEqual([{
+        expect(routeEvent.type).toBe('routeend');
+        expect(routeEvent.routes).toEqual([{
           name: 'A1'
         }, {
           name: 'A2'
         }]);
 
         router.setLocation('c');
-        evt = onRouteEnd.calls.argsFor(1)[0];
+        routeEvent = onRouteEnd.calls.argsFor(1)[0];
 
         expect(onRouteEnd.calls.count()).toBe(2);
-        expect(evt.type).toBe('routeend');
-        expect(evt.routes).toEqual([{
+        expect(routeEvent.type).toBe('routeend');
+        expect(routeEvent.routes).toEqual([{
           name: 'B'
         }]);
 
@@ -157,61 +157,121 @@ describe('Router', function () {
     it('should add given route', function () {
       var router = new Router();
       var onRouteStart = jasmine.createSpy('onRouteStart');
-      var evt;
+      var routeEvent;
 
       router.addRoute('A1', /^aa/);
       router.addRoute('B', /^b/);
 
-      router.onRoute = function (evt) {
-        if (evt.type === 'routestart') {
+      router.onRoute = function (routeEvent) {
+        if (routeEvent.type === 'routestart') {
           onRouteStart.apply(this, arguments);
         }
       };
 
       router.setLocation('aa');
-      evt = onRouteStart.calls.argsFor(0)[0];
+      routeEvent = onRouteStart.calls.argsFor(0)[0];
 
       expect(onRouteStart.calls.count()).toBe(1);
-      expect(evt.routes.length).toBe(1);
-      expect(evt.routes[0].name).toBe('A1');
+      expect(routeEvent.routes.length).toBe(1);
+      expect(routeEvent.routes[0].name).toBe('A1');
 
       router.addRoute('A2', /^aaa/);
       expect(onRouteStart.calls.count()).toBe(1);
 
       router.setLocation('aaa');
-      evt = onRouteStart.calls.argsFor(1)[0];
+      routeEvent = onRouteStart.calls.argsFor(1)[0];
 
       expect(onRouteStart.calls.count()).toBe(2);
-      expect(evt.routes.length).toBe(1);
-      expect(evt.routes[0].name).toBe('A2');
+      expect(routeEvent.routes.length).toBe(1);
+      expect(routeEvent.routes[0].name).toBe('A2');
     });
 
     it('should be ignored if given route is already added', function () {
       var router = new Router();
       var onRouteStart = jasmine.createSpy('onRouteStart');
-      var evt;
+      var routeEvent;
 
       router.addRoute('A1', /^aa/);
       router.addRoute('B', /^b/);
 
-      router.onRoute = function (evt) {
-        if (evt.type === 'routestart') {
+      router.onRoute = function (routeEvent) {
+        if (routeEvent.type === 'routestart') {
           onRouteStart.apply(this, arguments);
         }
       };
 
       router.setLocation('aa');
-      evt = onRouteStart.calls.argsFor(0)[0];
+      routeEvent = onRouteStart.calls.argsFor(0)[0];
 
       expect(onRouteStart.calls.count()).toBe(1);
-      expect(evt.routes.length).toBe(1);
-      expect(evt.routes[0].name).toBe('A1');
+      expect(routeEvent.routes.length).toBe(1);
+      expect(routeEvent.routes[0].name).toBe('A1');
 
       router.addRoute('A1', /^aaa/);
       expect(onRouteStart.calls.count()).toBe(1);
 
       router.setLocation('aaa');
       expect(onRouteStart.calls.count()).toBe(1);
+    });
+  });
+
+  describe('Route params', function () {
+    fit('should pass route parameters to onRoute handler', function () {
+      var router = new Router();
+      var onRouteStart = jasmine.createSpy('onRouteStart');
+      var onRouteChange = jasmine.createSpy('onRouteChange');
+      var onRouteEnd = jasmine.createSpy('onRouteEnd');
+      var routeStartEvent;
+      var routeChangeEvent;
+
+      router.addRoute('A', /^\/projects\/(\d+)/);
+      router.addRoute('B', /^\/projects\/(\d+?)\?q=(.+)/);
+
+      router.onRoute = function (routeEvent) {
+        if (routeEvent.type === 'routestart') {
+          onRouteStart.apply(this, arguments);
+        }
+
+        if (routeEvent.type === 'routechange') {
+          onRouteChange.apply(this, arguments);
+        }
+
+        if (routeEvent.type === 'routeend') {
+          onRouteEnd.apply(this, arguments);
+        }
+      };
+
+      router.setLocation('/projects/123');
+      routeStartEvent = onRouteStart.calls.argsFor(0)[0];
+
+      expect(routeStartEvent.routes.length).toBe(1);
+      expect(routeStartEvent.routes[0].name).toBe('A');
+      expect(routeStartEvent.routes[0].params).toEqual(['123']);
+
+      router.setLocation('/projects/123?q=foo');
+      routeStartEvent = onRouteStart.calls.argsFor(1)[0];
+
+      expect(routeStartEvent.routes.length).toBe(1);
+      expect(routeStartEvent.routes[0].name).toBe('B');
+      expect(routeStartEvent.routes[0].params).toEqual(['123', 'foo']);
+
+      routeChangeEvent = onRouteChange.calls.argsFor(0)[0];
+
+      // @todo fix
+      expect(routeChangeEvent.routes.length).toBe(1);
+      expect(routeChangeEvent.routes[0].name).toBe('A');
+      expect(routeChangeEvent.routes[0].params).toEqual(['123']);
+
+      router.setLocation('/projects/123?q=bar');
+      routeChangeEvent = onRouteChange.calls.argsFor(1)[0];
+
+      expect(routeChangeEvent.routes.length).toBe(2);
+      expect(routeChangeEvent.routes[0].name).toBe('A');
+      expect(routeChangeEvent.routes[0].params).toEqual(['123']);
+      expect(routeChangeEvent.routes[1].name).toBe('B');
+      expect(routeChangeEvent.routes[1].params).toEqual(['123', 'bar']);
+
+      // @todo routeend
     });
   });
 
@@ -236,8 +296,8 @@ describe('Router', function () {
         router.addRoute('A2', /^aaa/);
         router.addRoute('B', /^b/);
 
-        router.onRoute = function (evt) {
-          if (evt.type === 'routechange') {
+        router.onRoute = function (routeEvent) {
+          if (routeEvent.type === 'routechange') {
             onRouteChange.apply(this, arguments);
           }
         };
@@ -252,10 +312,10 @@ describe('Router', function () {
     });
   });
 
-  // @todo повторное добавление роута
-
   // @todo параметры
   // @todo change только при смене параметров
+
+  // @todo повторное добавление роута
   // @todo очередь
   // @todo добавление роута в onRoute
 });
