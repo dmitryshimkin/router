@@ -30,6 +30,7 @@ function each (arg, fn, ctx) {
     }
   } else {
     for (var key in arg) {
+      /* istanbul ignore else */
       if (arg.hasOwnProperty(key)) {
         fn.call(ctx, arg[key], key);
       }

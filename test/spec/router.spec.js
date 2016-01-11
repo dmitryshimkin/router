@@ -216,28 +216,31 @@ describe('Router', function () {
   });
 
   describe('Route params', function () {
-    fit('should pass route parameters to onRoute handler', function () {
+    it('should pass route parameters to onRoute handler', function () {
       var router = new Router();
+
       var onRouteStart = jasmine.createSpy('onRouteStart');
       var onRouteChange = jasmine.createSpy('onRouteChange');
       var onRouteEnd = jasmine.createSpy('onRouteEnd');
+
       var routeStartEvent;
       var routeChangeEvent;
+      var routeEndEvent;
 
       router.addRoute('A', /^\/projects\/(\d+)/);
       router.addRoute('B', /^\/projects\/(\d+?)\?q=(.+)/);
 
       router.onRoute = function (routeEvent) {
-        if (routeEvent.type === 'routestart') {
-          onRouteStart.apply(this, arguments);
-        }
-
-        if (routeEvent.type === 'routechange') {
-          onRouteChange.apply(this, arguments);
-        }
-
-        if (routeEvent.type === 'routeend') {
-          onRouteEnd.apply(this, arguments);
+        switch (routeEvent.type) {
+          case 'routestart':
+            onRouteStart.apply(this, arguments);
+            break;
+          case 'routechange':
+            onRouteChange.apply(this, arguments);
+            break;
+          case 'routeend':
+            onRouteEnd.apply(this, arguments);
+            break;
         }
       };
 
@@ -257,7 +260,6 @@ describe('Router', function () {
 
       routeChangeEvent = onRouteChange.calls.argsFor(0)[0];
 
-      // @todo fix
       expect(routeChangeEvent.routes.length).toBe(1);
       expect(routeChangeEvent.routes[0].name).toBe('A');
       expect(routeChangeEvent.routes[0].params).toEqual(['123']);
@@ -271,7 +273,12 @@ describe('Router', function () {
       expect(routeChangeEvent.routes[1].name).toBe('B');
       expect(routeChangeEvent.routes[1].params).toEqual(['123', 'bar']);
 
-      // @todo routeend
+      router.setLocation('/projects');
+      routeEndEvent = onRouteEnd.calls.argsFor(0)[0];
+
+      expect(routeEndEvent.routes.length).toBe(2);
+      expect(routeEndEvent.routes[0].name).toBe('A');
+      expect(routeEndEvent.routes[1].name).toBe('B');
     });
   });
 
