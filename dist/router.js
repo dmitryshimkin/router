@@ -87,8 +87,22 @@
   }
 
   /**
+   * Adds location to the queue and process queue
+   * @param location {String}
+   * @private
+   */
+
+  function addLocationToQueue (location) {
+    this._queue.push(location);
+    if (!this._processing) {
+      processQueue.call(this);
+    }
+  }
+
+  /**
    * @param match {Array}
    * @private
+   * @static
    */
 
   function getParams (match) {
@@ -101,6 +115,7 @@
    * @param name {String}
    * @returns {Object}
    * @private
+   * @static
    */
 
   function findRoute (routes, name) {
@@ -201,11 +216,34 @@
   }
 
   /**
+   * @private
+   */
+
+  function processQueue () {
+    var location = this._queue.shift();
+    if (location) {
+      this._processing = true;
+
+      this.location = location;
+
+      checkRoutes.call(this);
+
+      if (this._queue.length) {
+        processQueue.call(this);
+      }
+
+      this._processing = false;
+    }
+  }
+
+  /**
    * Router
    * @class
    */
 
   function Router () {
+    this._queue = [];
+    this._processing = false;
     this.location = '';
     this.routes = {};
     this.activeRoutes = [];
@@ -237,8 +275,7 @@
 
   Router.prototype.setLocation = function setLocation (location) {
     if (location !== this.location) {
-      this.location = location;
-      checkRoutes.call(this);
+      addLocationToQueue.call(this, location);
     }
   };
 
