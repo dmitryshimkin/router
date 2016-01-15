@@ -5,13 +5,15 @@
 /**
  * Adds location to the queue and process queue
  * @param location {String}
+ * @param inst {Router}
+ * @param props {Object}
  * @private
  */
 
-function addLocationToQueue (location) {
-  this._queue.push(location);
-  if (!this._processing) {
-    processQueue.call(this);
+function addLocationToQueue (location, inst, props) {
+  props.queue.push(location);
+  if (!props.isProcessing) {
+    processQueue(inst, props);
   }
 }
 
@@ -22,7 +24,9 @@ function addLocationToQueue (location) {
  */
 
 function getParams (match) {
-  return match ? match.slice(1, match.length) : [];
+  return match
+    ? match.slice(1, match.length)
+    : [];
 }
 
 /**
@@ -73,16 +77,22 @@ function getMatchingRoutes (routes, location) {
   return matchingRoutes;
 }
 
-function checkRoutes () {
-  var matchingRoutes = getMatchingRoutes(this.routes, this.location);
-  var ctx = this.context || null;
+/**
+ *
+ * @param props {Object}
+ * @private
+ */
+
+function checkRoutes (inst, props) {
+  var matchingRoutes = getMatchingRoutes(props.routes, props.location);
+  var ctx = props.context || null;
   var activeRoutes = [];
   var toAdd = [];
   var toRemove = [];
   var toUpdate = [];
 
   // Find obsolete routes
-  each(this._activeRoutes, function (activeRoute) {
+  each(props.activeRoutes, function (activeRoute) {
     var newActiveRoute = findRoute(matchingRoutes, activeRoute.name);
     if (newActiveRoute) {
       activeRoutes.push(newActiveRoute);
@@ -102,12 +112,12 @@ function checkRoutes () {
     }
   });
 
-  this._activeRoutes = activeRoutes;
+  props.activeRoutes = activeRoutes;
 
-  if (typeof this.onRoute === 'function') {
+  if (isFunction(inst.onRoute)) {
     // Notify `routechange`
     if (toUpdate.length) {
-      this.onRoute.call(ctx, new RouteEvent({
+      inst.onRoute.call(ctx, new RouteEvent({
         type: 'routechange',
         routes: toUpdate
       }));
@@ -115,7 +125,7 @@ function checkRoutes () {
 
     // Notify `routeend`
     if (toRemove.length) {
-      this.onRoute.call(ctx, new RouteEvent({
+      inst.onRoute.call(ctx, new RouteEvent({
         type: 'routeend',
         routes: toRemove
       }));
@@ -123,7 +133,7 @@ function checkRoutes () {
 
     // Notify `routestart`
     if (toAdd.length) {
-      this.onRoute.call(ctx, new RouteEvent({
+      inst.onRoute.call(ctx, new RouteEvent({
         type: 'routestart',
         routes: toAdd
       }));
@@ -132,23 +142,25 @@ function checkRoutes () {
 }
 
 /**
+ *
+ * @param inst {Router}
+ * @param props {Object}
  * @private
  */
 
-function processQueue () {
-  var location = this._queue.shift();
+function processQueue (inst, props) {
+  var location = props.queue.shift();
   if (location) {
-    this._processing = true;
+    props.isProcessing = true;
+    props.location = location;
 
-    this.location = location;
+    checkRoutes(inst, props);
 
-    checkRoutes.call(this);
-
-    if (this._queue.length) {
-      processQueue.call(this);
+    if (props.queue.length) {
+      processQueue(inst, props);
     }
 
-    this._processing = false;
+    props.isProcessing = false;
   }
 }
 
@@ -158,40 +170,55 @@ function processQueue () {
  */
 
 function Router () {
-  this._queue = [];
-  this._processing = false;
-  this._activeRoutes = [];
+  var router = createRouter(Router.prototype);
 
-  this.location = '';
-  this.routes = {};
+  var props = {
+    queue: [],
+    isProcessing: false,
+    activeRoutes: [],
+    location: '',
+    routes: {}
+  };
+
+  /**
+   * @param name {String}
+   * @param pattern {RegExp}
+   * @public
+   */
+
+  function addRoute (name, pattern) {
+    if (!props.routes[name]) {
+      props.routes[name] = new Route(name, pattern);
+    } else {
+      warn('Route `' + name + '` is already added');
+    }
+  }
+
+  /**
+   * Returns current location.
+   * @returns {String}
+   * @public
+   */
+
+  function getLocation () {
+    return props.location;
+  }
+
+  /**
+   * Sets location.
+   * @param location {String}
+   * @public
+   */
+
+  function setLocation (location) {
+    if (location !== props.location) {
+      addLocationToQueue(location, router, props);
+    }
+  }
+
+  router.addRoute = addRoute;
+  router.getLocation = getLocation;
+  router.setLocation = setLocation;
+
+  return router;
 }
-
-Router.prototype.addRoute = function addRoute (name, pattern) {
-  if (!this.routes[name]) {
-    this.routes[name] = new Route(name, pattern);
-  } else {
-    warn('Route `' + name + '` is already added');
-  }
-};
-
-/**
- * Returns current location.
- * @returns {String}
- * @public
- */
-
-Router.prototype.getLocation = function getLocation () {
-  return this.location;
-};
-
-/**
- * Sets location.
- * @param location {String}
- * @public
- */
-
-Router.prototype.setLocation = function setLocation (location) {
-  if (location !== this.location) {
-    addLocationToQueue.call(this, location);
-  }
-};

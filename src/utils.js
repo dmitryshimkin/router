@@ -2,6 +2,27 @@
 // Utilities
 // ================================================
 
+var supportsObjectCreate = isFunction(Object.create);
+
+/**
+ * Creates an object with given prototype
+ * @param proto {Object}
+ * @returns {Object}
+ * @private
+ */
+function createRouter (proto) {
+  function Router() {}
+  /* istanbul ignore else */
+  if (supportsObjectCreate) {
+    return Object.create(proto);
+  } else {
+    Router.prototype = proto;
+    var obj = new Router();
+    Router.prototype = null;
+    return obj;
+  }
+}
+
 /**
  * Extends given target object with another object.
  * @param target {Object}
@@ -41,6 +62,17 @@ function each (arg, fn, ctx) {
     }
   }
   return arg;
+}
+
+/**
+ *
+ * @param arg {*}
+ * @returns {Boolean}
+ * @private
+ */
+
+function isFunction (arg) {
+  return typeof arg === 'function';
 }
 
 /**
