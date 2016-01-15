@@ -1,6 +1,10 @@
 describe('Router', function () {
   'use strict';
 
+  // ================================================
+  // Helpers
+  // ================================================
+
   function $log (log, routeEvent) {
     var routes = routeEvent.routes.map(function (route) {
       return route.name;
@@ -13,6 +17,10 @@ describe('Router', function () {
       console.log(entry);
     });
   }
+
+  // ================================================
+  // Specs
+  // ================================================
 
   describe('Class', function () {
     it('should exist', function () {

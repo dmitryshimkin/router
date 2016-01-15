@@ -1,5 +1,9 @@
+// ================================================
+// Utilities
+// ================================================
+
 /**
- * Extends given target object with another object
+ * Extends given target object with another object.
  * @param target {Object}
  * @param obj {Object}
  * @returns {Object}
@@ -40,7 +44,7 @@ function each (arg, fn, ctx) {
 }
 
 /**
- * Prints warning on console.
+ * Prints given warning in the console.
  * @param msg {String}
  * @private
  */

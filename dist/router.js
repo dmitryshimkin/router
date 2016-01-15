@@ -8,8 +8,12 @@
 ;(function (win) {
   'use strict';
 
+  // ================================================
+  // Utilities
+  // ================================================
+
   /**
-   * Extends given target object with another object
+   * Extends given target object with another object.
    * @param target {Object}
    * @param obj {Object}
    * @returns {Object}
@@ -50,7 +54,7 @@
   }
 
   /**
-   * Prints warning on console.
+   * Prints given warning in the console.
    * @param msg {String}
    * @private
    */
@@ -61,6 +65,10 @@
     } catch (ex) {
     }
   }
+
+  // ================================================
+  // Route
+  // ================================================
 
   /**
    * Route class
@@ -83,6 +91,10 @@
     return location.match(this.pattern);
   };
 
+  // ================================================
+  // Route Event
+  // ================================================
+
   /**
    * RouteEvent class.
    * @param attrs {Object}
@@ -92,6 +104,10 @@
   function RouteEvent (attrs) {
     extend(this, attrs);
   }
+
+  // ================================================
+  // Router
+  // ================================================
 
   /**
    * Adds location to the queue and process queue
@@ -285,6 +301,10 @@
       addLocationToQueue.call(this, location);
     }
   };
+
+  // ================================================
+  // Export
+  // ================================================
 
   if (typeof define === 'function' && define.amd) {
     define('Router', Router); // AMD
