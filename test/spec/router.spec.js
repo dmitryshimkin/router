@@ -1,6 +1,19 @@
 describe('Router', function () {
   'use strict';
 
+  function $log (log, routeEvent) {
+    var routes = routeEvent.routes.map(function (route) {
+      return route.name;
+    });
+    log.push(routeEvent.type + ': ' + routes.join(' '));
+  }
+
+  function $printLog (log) {
+    log.forEach(function (entry) {
+      console.log(entry);
+    });
+  }
+
   describe('Class', function () {
     it('should exist', function () {
       expect(typeof window.Router).toBe('function');
@@ -317,12 +330,38 @@ describe('Router', function () {
         expect(onRouteChange.calls.count()).toBe(1);
       });
     });
+
+    describe('Queue', function () {
+      it('should invoke all onRoute callbacks before location change', function () {
+        var router = new Router();
+        var redirected = false;
+        var log = [];
+
+        router.addRoute('Route_A', /^path_a/);
+        router.addRoute('Route_AB', /^path_ab/);
+
+        router.onRoute = function (routeEvent) {
+          $log(log, routeEvent);
+          if (routeEvent.type === 'routechange' && !redirected) {
+            redirected = true;
+            router.setLocation('path_a');
+          }
+        };
+
+        router.setLocation('path_a');
+        router.setLocation('path_ab');
+
+        expect(log).toEqual([
+          'routestart: Route_A',
+          'routechange: Route_A',
+          'routestart: Route_AB',
+          'routechange: Route_A',
+          'routeend: Route_AB'
+        ]);
+      });
+    });
   });
 
-  // @todo параметры
-  // @todo change только при смене параметров
-
+  // @todo правильный location в хендлере
   // @todo повторное добавление роута
-  // @todo очередь
-  // @todo добавление роута в onRoute
 });

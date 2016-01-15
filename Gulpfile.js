@@ -45,6 +45,10 @@ gulp.task('build', [
   'scripts'
 ]);
 
+gulp.task('test', ['build'], function () {
+  //console.log('test');
+});
+
 gulp.task('default', [
   'build',
   'minify'

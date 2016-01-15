@@ -33,28 +33,13 @@
       }
     } else {
       for (var key in arg) {
+        /* istanbul ignore else */
         if (arg.hasOwnProperty(key)) {
           fn.call(ctx, arg[key], key);
         }
       }
     }
     return arg;
-  }
-
-  /**
-   * @param arr {Array}
-   * @param fn {Function}
-   * @param ctx {Object} Context for the callback
-   * @returns {Array}
-   * @private
-   */
-
-  function map (arr, fn, ctx) {
-    var result = new Array(arr.length);
-    for (var i = 0, len = arr.length; i < len; i++) {
-      result[i] = fn.call(ctx, arr[i], i);
-    }
-    return result;
   }
 
   /**
@@ -101,12 +86,56 @@
     extend(this, attrs);
   }
 
+  /**
+   * @param match {Array}
+   * @private
+   */
+
+  function getParams (match) {
+    return match ? match.slice(1, match.length) : [];
+  }
+
+  /**
+   * TBD
+   * @param routes {Array}
+   * @param name {String}
+   * @returns {Object}
+   * @private
+   */
+
+  function findRoute (routes, name) {
+    var i = routes.length;
+    while (i--) {
+      if (routes[i].name === name) {
+        return routes[i];
+      }
+    }
+    return null;
+  }
+
+  /**
+   * TBD
+   * @private
+   */
+
+  function hasRoute (routes, route) {
+    return findRoute(routes, route.name) !== null;
+  }
+
+  /**
+   * @private
+   */
+
   function getMatchingRoutes (routes, location) {
     var matchingRoutes = [];
 
     each(routes, function (route) {
-      if (route.matches(location)) {
-        matchingRoutes.push(route.name);
+      var match = route.matches(location);
+      if (match) {
+        matchingRoutes.push({
+          name: route.name,
+          params: getParams(match)
+        });
       }
     });
 
@@ -123,17 +152,20 @@
 
     // Find obsolete routes
     each(this.activeRoutes, function (activeRoute) {
-      if (matchingRoutes.indexOf(activeRoute) !== -1) {
-        activeRoutes.push(activeRoute);
-        toUpdate.push(activeRoute);
+      var newActiveRoute = findRoute(matchingRoutes, activeRoute.name);
+      if (newActiveRoute) {
+        activeRoutes.push(newActiveRoute);
+        toUpdate.push(newActiveRoute);
       } else {
-        toRemove.push(activeRoute);
+        toRemove.push({
+          name: activeRoute.name
+        });
       }
     });
 
     // Find new active routes
     each(matchingRoutes, function (matchingRoute) {
-      if (activeRoutes.indexOf(matchingRoute) === -1) {
+      if (!hasRoute(activeRoutes, matchingRoute)) {
         activeRoutes.push(matchingRoute);
         toAdd.push(matchingRoute);
       }
@@ -146,12 +178,7 @@
       if (toUpdate.length) {
         this.onRoute.call(ctx, new RouteEvent({
           type: 'routechange',
-          routes: map(toUpdate, function (name) {
-            return {
-              name: name,
-              params: []
-            };
-          })
+          routes: toUpdate
         }));
       }
 
@@ -159,11 +186,7 @@
       if (toRemove.length) {
         this.onRoute.call(ctx, new RouteEvent({
           type: 'routeend',
-          routes: map(toRemove, function (name) {
-            return {
-              name: name
-            };
-          })
+          routes: toRemove
         }));
       }
 
@@ -171,12 +194,7 @@
       if (toAdd.length) {
         this.onRoute.call(ctx, new RouteEvent({
           type: 'routestart',
-          routes: map(toAdd, function (name) {
-            return {
-              name: name,
-              params: []
-            };
-          })
+          routes: toAdd
         }));
       }
     }
