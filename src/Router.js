@@ -82,7 +82,7 @@ function checkRoutes () {
   var toUpdate = [];
 
   // Find obsolete routes
-  each(this.activeRoutes, function (activeRoute) {
+  each(this._activeRoutes, function (activeRoute) {
     var newActiveRoute = findRoute(matchingRoutes, activeRoute.name);
     if (newActiveRoute) {
       activeRoutes.push(newActiveRoute);
@@ -102,7 +102,7 @@ function checkRoutes () {
     }
   });
 
-  this.activeRoutes = activeRoutes;
+  this._activeRoutes = activeRoutes;
 
   if (typeof this.onRoute === 'function') {
     // Notify `routechange`
@@ -160,9 +160,10 @@ function processQueue () {
 function Router () {
   this._queue = [];
   this._processing = false;
+  this._activeRoutes = [];
+
   this.location = '';
   this.routes = {};
-  this.activeRoutes = [];
 }
 
 Router.prototype.addRoute = function addRoute (name, pattern) {
