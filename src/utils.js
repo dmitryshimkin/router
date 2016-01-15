@@ -1,22 +1,22 @@
 // ================================================
-// Utilities
+// Utils
 // ================================================
 
 var supportsObjectCreate = isFunction(Object.create);
 
 /**
  * Creates an object with given prototype
- * @param proto {Object}
+ * @param routerProto {Object}
  * @returns {Object}
  * @private
  */
-function createRouter (proto) {
+function createRouter (routerProto) {
   function Router() {}
   /* istanbul ignore else */
   if (supportsObjectCreate) {
-    return Object.create(proto);
+    return Object.create(routerProto);
   } else {
-    Router.prototype = proto;
+    Router.prototype = routerProto;
     var obj = new Router();
     Router.prototype = null;
     return obj;
@@ -65,7 +65,7 @@ function each (arg, fn, ctx) {
 }
 
 /**
- *
+ * TBD
  * @param arg {*}
  * @returns {Boolean}
  * @private

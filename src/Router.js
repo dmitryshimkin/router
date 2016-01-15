@@ -18,6 +18,7 @@ function addLocationToQueue (location, inst, props) {
 }
 
 /**
+ * TBD
  * @param match {Array}
  * @private
  * @static
@@ -58,6 +59,7 @@ function hasRoute (routes, route) {
 }
 
 /**
+ * TBD
  * @private
  */
 
@@ -78,7 +80,7 @@ function getMatchingRoutes (routes, location) {
 }
 
 /**
- *
+ * TBD
  * @param props {Object}
  * @private
  */
@@ -142,7 +144,7 @@ function checkRoutes (inst, props) {
 }
 
 /**
- *
+ * TBD
  * @param inst {Router}
  * @param props {Object}
  * @private
@@ -172,6 +174,7 @@ function processQueue (inst, props) {
 function Router () {
   var router = createRouter(Router.prototype);
 
+  // Private props
   var props = {
     queue: [],
     isProcessing: false,
@@ -216,6 +219,7 @@ function Router () {
     }
   }
 
+  // Expose public API
   router.addRoute = addRoute;
   router.getLocation = getLocation;
   router.setLocation = setLocation;

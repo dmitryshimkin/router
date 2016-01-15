@@ -9,24 +9,24 @@
   'use strict';
 
   // ================================================
-  // Utilities
+  // Utils
   // ================================================
 
   var supportsObjectCreate = isFunction(Object.create);
 
   /**
    * Creates an object with given prototype
-   * @param proto {Object}
+   * @param routerProto {Object}
    * @returns {Object}
    * @private
    */
-  function createRouter (proto) {
+  function createRouter (routerProto) {
     function Router() {}
     /* istanbul ignore else */
     if (supportsObjectCreate) {
-      return Object.create(proto);
+      return Object.create(routerProto);
     } else {
-      Router.prototype = proto;
+      Router.prototype = routerProto;
       var obj = new Router();
       Router.prototype = null;
       return obj;
@@ -75,7 +75,7 @@
   }
 
   /**
-   *
+   * TBD
    * @param arg {*}
    * @returns {Boolean}
    * @private
@@ -157,6 +157,7 @@
   }
 
   /**
+   * TBD
    * @param match {Array}
    * @private
    * @static
@@ -197,6 +198,7 @@
   }
 
   /**
+   * TBD
    * @private
    */
 
@@ -217,7 +219,7 @@
   }
 
   /**
-   *
+   * TBD
    * @param props {Object}
    * @private
    */
@@ -281,7 +283,7 @@
   }
 
   /**
-   *
+   * TBD
    * @param inst {Router}
    * @param props {Object}
    * @private
@@ -311,6 +313,7 @@
   function Router () {
     var router = createRouter(Router.prototype);
 
+    // Private props
     var props = {
       queue: [],
       isProcessing: false,
@@ -355,6 +358,7 @@
       }
     }
 
+    // Expose public API
     router.addRoute = addRoute;
     router.getLocation = getLocation;
     router.setLocation = setLocation;
