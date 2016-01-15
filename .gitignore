@@ -1,4 +1,4 @@
 .idea
 roadmap.txt
 node_modules
-coverage
+test/coverage

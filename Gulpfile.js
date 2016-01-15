@@ -5,6 +5,7 @@ var rename = require('gulp-rename');
 var sizereport = require('gulp-sizereport');
 var uglify = require('gulp-uglify');
 var wrap = require('gulp-wrap');
+var Server = require('karma').Server;
 
 gulp.task('scripts', function() {
   var files = [
@@ -37,17 +38,20 @@ gulp.task('report', function () {
     }));
 });
 
-// =================
+gulp.task('test', ['build'], function (done) {
+  new Server({
+    configFile: __dirname + '/test/karma.conf.js',
+    singleRun: true
+  }, done).start();
+});
+
+// =============================================================
 // Tasks
-// =================
+// =============================================================
 
 gulp.task('build', [
   'scripts'
 ]);
-
-gulp.task('test', ['build'], function () {
-  //console.log('test');
-});
 
 gulp.task('default', [
   'build',

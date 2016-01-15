@@ -4,7 +4,8 @@
   "author": "Dmitry Shimkin <dmitryshimkin@gmail.com>",
   "version": "0.0.1",
   "scripts": {
-    "build": "gulp build && gulp report"
+    "build": "gulp build && gulp report",
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",

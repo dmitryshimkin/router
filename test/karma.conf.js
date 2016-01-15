@@ -31,6 +31,12 @@ module.exports = function(config) {
       outputDir: 'test/report/html/',
       focusOnFailures: true
     },
+    coverageReporter: {
+      reporters: [
+        { type: 'html', dir: './test/coverage' },
+        { type: 'text' }
+      ]
+    },
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO, // LOG_DISABLE, LOG_ERROR, LOG_WARN, LOG_INFO, LOG_DEBUG
