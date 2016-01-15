@@ -1,3 +1,10 @@
+/**
+ * Router
+ * Version: 0.0.1
+ * Author: Dmitry Shimkin <dmitryshimkin@gmail.com>
+ * License: MIT
+ * https://github.com/dmitryshimkin/router
+ */
 ;(function (win) {
   'use strict';
 
