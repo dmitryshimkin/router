@@ -342,7 +342,7 @@ describe('Router', function () {
     describe('Queue', function () {
       it('should invoke all onRoute callbacks before location change', function () {
         var router = new Router();
-        var redirected = false;
+        var redirectCount = 0;
         var log = [];
 
         router.addRoute('Route_A', /^path_a/);
@@ -350,8 +350,8 @@ describe('Router', function () {
 
         router.onRoute = function (routeEvent) {
           $log(log, routeEvent);
-          if (routeEvent.type === 'routechange' && !redirected) {
-            redirected = true;
+          if (routeEvent.type === 'routechange' && !redirectCount) {
+            redirectCount = redirectCount + 1;
             router.setLocation('path_a');
           }
         };
@@ -366,6 +366,42 @@ describe('Router', function () {
           'routechange: Route_A',
           'routeend: Route_AB'
         ]);
+      });
+
+      it('should throw error if redirect limit exceeded', function () {
+        Router.MAX_REDIRECT_COUNT = 5;
+
+        var router = new Router();
+        var redirectCount = 0;
+        var locations = [
+          'path_a',
+          'path_a2',
+          'path_a3',
+          'path_a4',
+          'path_a5',
+          'path_a6',
+          'path_a7'
+        ];
+
+        router.addRoute('Route_A', /^path_a/);
+        router.addRoute('Route_AB', /^path_ab/);
+
+        router.onRoute = function () {
+          if (redirectCount < 7) {
+            redirectCount = redirectCount + 1;
+
+            if (redirectCount < 6) {
+              router.setLocation(locations[redirectCount]);
+            } else {
+              expect(function () {
+                router.setLocation(locations[redirectCount]);
+              }).toThrow();
+            }
+          }
+        };
+
+        router.setLocation(locations[0]);
+        expect(redirectCount).toBe(6);
       });
     });
   });
