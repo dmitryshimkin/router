@@ -150,6 +150,11 @@
    */
 
   function addLocationToQueue (location, inst, props) {
+    if (props.redirectCount > Router.MAX_REDIRECT_COUNT) {
+      props.redirectCount = 0;
+      throw Error('Too many redirects');
+    }
+
     props.queue.push(location);
     if (!props.isProcessing) {
       processQueue(inst, props);
@@ -290,18 +295,23 @@
    */
 
   function processQueue (inst, props) {
-    var location = props.queue.shift();
+    var location = props.queue[0];
     if (location) {
+      props.redirectCount++;
+
       props.isProcessing = true;
       props.location = location;
 
       checkRoutes(inst, props);
+
+      props.queue.shift();
 
       if (props.queue.length) {
         processQueue(inst, props);
       }
 
       props.isProcessing = false;
+      props.redirectCount--;
     }
   }
 
@@ -319,6 +329,7 @@
       isProcessing: false,
       activeRoutes: [],
       location: '',
+      redirectCount: 0,
       routes: {}
     };
 
@@ -365,6 +376,13 @@
 
     return router;
   }
+
+  /**
+   * TBD
+   * @number
+   * @static
+   */
+  Router.MAX_REDIRECT_COUNT = 10;
 
   // ================================================
   // Export
