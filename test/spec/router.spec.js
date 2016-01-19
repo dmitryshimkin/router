@@ -87,6 +87,29 @@ describe('Router', function () {
           params: []
         }]);
       });
+
+      it('should have proper current location when handler is invoked', function () {
+        var router = new Router();
+        var history = [];
+
+        router.addRoute('Route_A', /^a/);
+        router.addRoute('Route_B', /^b/);
+
+        router.onRoute = function (evt) {
+          if (evt.type === 'routestart') {
+            history.push(router.getLocation());
+            // Redirect from a to b inside onRoute handler
+            if (router.getLocation() === 'a') {
+              router.setLocation('b');
+            }
+          }
+        };
+
+        router.setLocation('a');
+        router.setLocation('b');
+
+        expect(history).toEqual(['a', 'b']);
+      });
     });
 
     describe('routechange', function () {
@@ -126,6 +149,28 @@ describe('Router', function () {
           { name: 'A1', params: [] },
           { name: 'A2', params: [] }
         ]);
+      });
+
+      it('should have proper current location when handler is invoked', function () {
+        var router = new Router();
+        var history = [];
+
+        router.addRoute('Route_A', /^a/);
+
+        router.onRoute = function (evt) {
+          if (evt.type === 'routechange') {
+            history.push(router.getLocation());
+            // Redirect from `aa` to `aaa` inside onRoute handler
+            if (router.getLocation() === 'aa') {
+              router.setLocation('aaa');
+            }
+          }
+        };
+
+        router.setLocation('a');
+        router.setLocation('aa');
+
+        expect(history).toEqual(['aa', 'aaa']);
       });
     });
 
@@ -170,6 +215,31 @@ describe('Router', function () {
 
         router.setLocation('d');
         expect(onRouteEnd.calls.count()).toBe(2);
+      });
+
+      it('should have proper current location when handler is invoked', function () {
+        var router = new Router();
+        var history = [];
+
+        router.addRoute('Route_A1', /^a/);
+        router.addRoute('Route_A2', /^aa/);
+        router.addRoute('Route_A3', /^aaa/);
+
+        router.onRoute = function (evt) {
+          if (evt.type === 'routeend') {
+            history.push(router.getLocation());
+            // Redirect from `aa` to `a` inside onRoute handler
+            if (router.getLocation() === 'aa') {
+              router.setLocation('a');
+            }
+          }
+        };
+
+        router.setLocation('aaa');
+        router.setLocation('aa');
+        router.setLocation('b');
+
+        expect(history).toEqual(['aa', 'a', 'b']);
       });
     });
   });
@@ -405,7 +475,4 @@ describe('Router', function () {
       });
     });
   });
-
-  // @todo правильный location в хендлере
-  // @todo повторное добавление роута
 });
