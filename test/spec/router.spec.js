@@ -304,6 +304,34 @@ describe('Router', function () {
       router.setLocation('aaa');
       expect(onRouteStart.calls.count()).toBe(1);
     });
+
+    it('should be added only when the current event loop is finished', function () {
+      var router = new Router();
+      var log = [];
+
+      router.onRoute = function (evt) {
+        $log(log, evt);
+        if (router.getLocation() === 'a') {
+          router.addRoute('Route_A2', /a/);
+        }
+      };
+
+      router.addRoute('Route_A', /a/);
+
+      router.setLocation('a');
+
+      expect(log).toEqual([
+        'routestart: Route_A'
+      ]);
+
+      router.setLocation('aa');
+
+      expect(log).toEqual([
+        'routestart: Route_A',
+        'routechange: Route_A',
+        'routestart: Route_A2'
+      ]);
+    });
   });
 
   describe('Route params', function () {
