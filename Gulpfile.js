@@ -51,6 +51,7 @@ gulp.task('scripts', function() {
 gulp.task('minify', ['build'], function () {
   return gulp.src('dist/router.js')
     .pipe(uglify({
+      mangle: false,
       preserveComments: 'license'
     }))
     .pipe(rename('router.min.js'))
