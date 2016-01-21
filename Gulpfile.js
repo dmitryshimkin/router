@@ -73,7 +73,14 @@ gulp.task('report', function () {
  * Build and run test
  */
 
-gulp.task('test', ['build'], function (done) {
+gulp.task('test:dev', ['build'], function (done) {
+  new Server({
+    configFile: __dirname + '/test/karma-dev.conf.js',
+    singleRun: true
+  }, done).start();
+});
+
+gulp.task('test:prod', ['build'], function (done) {
   new Server({
     configFile: __dirname + '/test/karma.conf.js',
     singleRun: true
@@ -86,6 +93,10 @@ gulp.task('test', ['build'], function (done) {
 
 gulp.task('build', [
   'scripts'
+]);
+
+gulp.task('test', [
+  'test:dev'
 ]);
 
 gulp.task('default', [

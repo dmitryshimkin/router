@@ -3,14 +3,8 @@ module.exports = function(config) {
     basePath: '..',
     frameworks: ['jasmine'],
     files: [
-      // Source files
-      'src/utils.js',
-      'src/Route.js',
-      'src/RouteEvent.js',
-      'src/Router.js',
-
-      // Spec
-      'test/spec/router.spec.js'
+      'dist/router.min.js',      // Source files
+      'test/spec/router.spec.js' // Spec
     ],
     plugins: [
       'karma-jasmine',
@@ -24,8 +18,7 @@ module.exports = function(config) {
       'src/*.js': ['coverage']
     },
     reporters: [
-      'progress',
-      'coverage'
+      'progress'
     ],
     htmlReporter: {
       outputDir: 'test/report/html/',
@@ -39,7 +32,7 @@ module.exports = function(config) {
     },
     port: 9876,
     colors: true,
-    logLevel: config.LOG_INFO, // LOG_DISABLE, LOG_ERROR, LOG_WARN, LOG_INFO, LOG_DEBUG
+    logLevel: config.LOG_INFO,   // LOG_DISABLE, LOG_ERROR, LOG_WARN, LOG_INFO, LOG_DEBUG
     autoWatch: false,
     singleRun: true,
     concurrency: Infinity

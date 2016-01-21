@@ -7,7 +7,7 @@
     "Dmitry Shimkin <dmitryshimkin@gmail.com>"
   ],
   "scripts": {
-    "build": "gulp build && gulp report",
+    "build": "gulp build && gulp test:prod && gulp report",
     "test": "gulp test"
   },
   "repository": {
