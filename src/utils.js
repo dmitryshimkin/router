@@ -24,21 +24,6 @@ function createRouter (routerProto) {
 }
 
 /**
- * Extends given target object with another object.
- * @param target {Object}
- * @param obj {Object}
- * @returns {Object}
- * @private
- */
-
-function extend (target, obj) {
-  each(obj, function (value, key) {
-    target[key] = value;
-  });
-  return target;
-}
-
-/**
  * Iterates through all properties in object and invokes
  * given callback for each property.
  * @param arg {Object|Array}

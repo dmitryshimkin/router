@@ -86,13 +86,13 @@ function getMatchingRoutes (routes, location) {
 
 /**
  * TBD
+ * @param inst {Router}
  * @param props {Object}
  * @private
  */
 
 function checkRoutes (inst, props) {
   var matchingRoutes = getMatchingRoutes(props.routes, props.location);
-  var ctx = props.context || null;
   var activeRoutes = [];
   var toAdd = [];
   var toRemove = [];
@@ -124,26 +124,17 @@ function checkRoutes (inst, props) {
   if (isFunction(inst.onRoute)) {
     // Notify `routechange`
     if (toUpdate.length) {
-      inst.onRoute.call(ctx, new RouteEvent({
-        type: 'routechange',
-        routes: toUpdate
-      }));
+      inst.onRoute(new RouteEvent(RouteEvent.EVT_ROUTE_CHANGE, toUpdate));
     }
 
     // Notify `routeend`
     if (toRemove.length) {
-      inst.onRoute.call(ctx, new RouteEvent({
-        type: 'routeend',
-        routes: toRemove
-      }));
+      inst.onRoute(new RouteEvent(RouteEvent.EVT_ROUTE_END, toRemove));
     }
 
     // Notify `routestart`
     if (toAdd.length) {
-      inst.onRoute.call(ctx, new RouteEvent({
-        type: 'routestart',
-        routes: toAdd
-      }));
+      inst.onRoute(new RouteEvent(RouteEvent.EVT_ROUTE_START, toAdd));
     }
   }
 }
@@ -181,7 +172,7 @@ function processQueue (inst, props) {
  * @class
  */
 
-function Router () {
+function Router (config) {
   var router = createRouter(Router.prototype);
 
   // Private props
@@ -243,4 +234,5 @@ function Router () {
  * @number
  * @static
  */
+
 Router.MAX_REDIRECT_COUNT = 10;

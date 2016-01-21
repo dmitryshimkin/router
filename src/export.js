@@ -7,5 +7,5 @@ if (typeof define === 'function' && define.amd) {
 } else if (typeof exports === 'object') {
   module.exports = Router; // Node, CommonJS-like
 } else {
-  win.Router = Router; // Browser globals (root is window)
+  window.Router = Router; // Browser global
 }

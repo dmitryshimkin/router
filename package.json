@@ -2,7 +2,7 @@
   "name": "router",
   "description": "Tiny client-side router",
   "author": "Dmitry Shimkin <dmitryshimkin@gmail.com>",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "autors": [
     "Dmitry Shimkin <dmitryshimkin@gmail.com>"
   ],

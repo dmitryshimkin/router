@@ -1,11 +1,11 @@
 /**
  * Router
- * Version: 0.0.1
+ * Version: 0.1.0
  * Author: Dmitry Shimkin <dmitryshimkin@gmail.com>
  * License: MIT
  * https://github.com/dmitryshimkin/router
  */
-;(function (win) {
+;(function () {
   'use strict';
 
   // ================================================
@@ -31,21 +31,6 @@
       Router.prototype = null;
       return obj;
     }
-  }
-
-  /**
-   * Extends given target object with another object.
-   * @param target {Object}
-   * @param obj {Object}
-   * @returns {Object}
-   * @private
-   */
-
-  function extend (target, obj) {
-    each(obj, function (value, key) {
-      target[key] = value;
-    });
-    return target;
   }
 
   /**
@@ -129,13 +114,39 @@
 
   /**
    * RouteEvent class.
-   * @param attrs {Object}
+   * @param type {String}
+   * @param routes {Array}
    * @constructor
    */
 
-  function RouteEvent (attrs) {
-    extend(this, attrs);
+  function RouteEvent (type, routes) {
+    this.type = type;
+    this.routes = routes;
   }
+
+  /**
+   * Route change event name
+   * @string
+   * @static
+   */
+
+  RouteEvent.EVT_ROUTE_CHANGE = 'routechange';
+
+  /**
+   * Route end event name
+   * @string
+   * @static
+   */
+
+  RouteEvent.EVT_ROUTE_END = 'routeend';
+
+  /**
+   * Route start event name
+   * @string
+   * @static
+   */
+
+  RouteEvent.EVT_ROUTE_START = 'routestart';
 
   // ================================================
   // Router
@@ -225,13 +236,13 @@
 
   /**
    * TBD
+   * @param inst {Router}
    * @param props {Object}
    * @private
    */
 
   function checkRoutes (inst, props) {
     var matchingRoutes = getMatchingRoutes(props.routes, props.location);
-    var ctx = props.context || null;
     var activeRoutes = [];
     var toAdd = [];
     var toRemove = [];
@@ -263,26 +274,17 @@
     if (isFunction(inst.onRoute)) {
       // Notify `routechange`
       if (toUpdate.length) {
-        inst.onRoute.call(ctx, new RouteEvent({
-          type: 'routechange',
-          routes: toUpdate
-        }));
+        inst.onRoute(new RouteEvent(RouteEvent.EVT_ROUTE_CHANGE, toUpdate));
       }
 
       // Notify `routeend`
       if (toRemove.length) {
-        inst.onRoute.call(ctx, new RouteEvent({
-          type: 'routeend',
-          routes: toRemove
-        }));
+        inst.onRoute(new RouteEvent(RouteEvent.EVT_ROUTE_END, toRemove));
       }
 
       // Notify `routestart`
       if (toAdd.length) {
-        inst.onRoute.call(ctx, new RouteEvent({
-          type: 'routestart',
-          routes: toAdd
-        }));
+        inst.onRoute(new RouteEvent(RouteEvent.EVT_ROUTE_START, toAdd));
       }
     }
   }
@@ -320,7 +322,7 @@
    * @class
    */
 
-  function Router () {
+  function Router (config) {
     var router = createRouter(Router.prototype);
 
     // Private props
@@ -382,6 +384,7 @@
    * @number
    * @static
    */
+
   Router.MAX_REDIRECT_COUNT = 10;
 
   // ================================================
@@ -393,6 +396,6 @@
   } else if (typeof exports === 'object') {
     module.exports = Router; // Node, CommonJS-like
   } else {
-    win.Router = Router; // Browser globals (root is window)
+    window.Router = Router; // Browser global
   }
-}(this));
+}());

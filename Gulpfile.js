@@ -39,7 +39,7 @@ gulp.task('scripts', function() {
   return gulp.src(files)
     .pipe(concat('router.js'))
     .pipe(indent())
-    .pipe(wrap(';(function (win) {\n  \'use strict\';\n\n<%= contents %>}(this));\n'))
+    .pipe(wrap(';(function () {\n  \'use strict\';\n\n<%= contents %>}());\n'))
     .pipe(header(getBanner(), pkg))
     .pipe(gulp.dest('./dist/'));
 });
