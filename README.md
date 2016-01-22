@@ -1,9 +1,39 @@
 Router
 ======
 
-Description
+Tiny environment agnostic dependency free cross-browser router.
 
-## Features
+The implementation is based on the following ideas:
+
+- **Environment independence**
+
+  The router is not aware of browser API such as `window.location` or `History API`.
+  It uses own internal `location` and provides `getLocation` and `setLocation` methods
+  to read and write it. This allows to keep the router's implementation as simple as possible.
+  However the router can be easily [integrated](examples/hash.html) with `window.location`.
+
+- **Routable components**
+
+  In a typical server routing implementation there is only one controller that handles a given location.
+  In contrast to the server this router is intended for a client-side SPA and
+  supports any number of components that rendered on the same page at the same time according to a given location.
+
+  In general when the router's location is changed there are some components that should be destroyed,
+  some components that should be created, and some components that should be updated.
+
+  The router allows you to define a route (route is just a name and a location pattern),
+  and get notifications when this route is started, updated, and stopped.
+
+- **Low level API only**
+
+  The implementation and API of the router should be as simple as possible.
+  The router does not have the integration with browser API.
+  The router does not support any sugar for patterns such as `/product/:id`.
+  However all this things can be easily added on higher level.
+
+- **Performance**
+
+  The router has a small footprint — only **1.28 KB** compressed and gzipped.
 
 
 ## Browser support
@@ -167,7 +197,7 @@ router.setLocation('/books/2');
 // "routestart", [{ name: "book", params: ["2"] }]
 
 router.setLocation('/authors');
-// "routeend", [{ name: "book" }]
+// "routeend",   [{ name: "book" }]
 ```
 
 
@@ -175,3 +205,33 @@ router.setLocation('/authors');
 
 #### `MAX_REDIRECT_COUNT`
 
+Limit of synchronous redirects count. Default value is `10`.
+
+A synchronous redirect happens when `setLocation` is called from `onRoute` handler.
+In some circumstances it might lead to infinite redirects.
+
+`Router.MAX_REDIRECT_COUNT` defines how many consecutive redirects can happen in one event loop.
+If the limit is exceeded an error will be thrown. Consider:
+
+```javascript
+var redirectCount = 0;
+
+Router.MAX_REDIRECT_COUNT = 120;
+
+router.addRoute('books', /^books$/);
+router.addRoute('authors', /^authors$/);
+
+router.onRoute(function (evt) {
+  var location = (router.getLocation() === 'books') ? 'authors' : 'books';
+
+  router.setLocation(location);
+  redirectCount++;
+});
+
+router.setLocation('books'); // Throws error "Too many redirects"
+console.log(count);          // 120
+```
+
+
+## License
+Released under the [MIT License](LICENSE)
