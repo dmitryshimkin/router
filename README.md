@@ -68,7 +68,7 @@ bower install router
 
 ## Usage
 
-### Browser
+**Browser**
 
 In a browser include the file in your document:
 
@@ -80,20 +80,20 @@ In a browser include the file in your document:
 ```
 
 
-#### ES6
+**ES6**
 
 ```javascript
 import {Router} from 'router';
 ```
 
 
-#### CommonJS
+**CommonJS**
 
 ```javascript
 var Router = require('router');
 ```
 
-#### AMD
+**AMD**
 
 ```javascript
 require(['router'], function (Router) {
