@@ -71,6 +71,17 @@
   }
 
   /**
+   * TBD
+   * @param arg {*}
+   * @returns {Boolean}
+   * @private
+   */
+
+  function isObject (arg) {
+    return typeof arg === 'object' && arg !== null;
+  }
+
+  /**
    * Prints given warning in the console.
    * @param msg {String}
    * @private
@@ -319,10 +330,11 @@
 
   /**
    * Router
+   * @param routes {Object}
    * @class
    */
 
-  function Router (config) {
+  function Router (routes) {
     var router = createRouter(Router.prototype);
 
     // Private props
@@ -336,17 +348,26 @@
     };
 
     /**
-     * @param name {String}
-     * @param pattern {RegExp}
+     * TBD
+     * @param routes {Object}
      * @public
      */
 
-    function addRoute (name, pattern) {
-      if (!props.routes[name]) {
-        props.routes[name] = new Route(name, pattern);
-      } else {
-        warn('Route `' + name + '` is already added');
+    function addRoute (routes) {
+      if (!isObject(routes)) {
+        var name = arguments[0];
+        var pattern = arguments[1];
+        routes = {};
+        routes[name] = pattern;
       }
+
+      each(routes, function (pattern, name) {
+        if (!props.routes[name]) {
+          props.routes[name] = new Route(name, pattern);
+        } else {
+          warn('Route `' + name + '` is already added');
+        }
+      });
     }
 
     /**
@@ -375,6 +396,10 @@
     router.addRoute = addRoute;
     router.getLocation = getLocation;
     router.setLocation = setLocation;
+
+    if (routes) {
+      router.addRoute(routes);
+    }
 
     return router;
   }

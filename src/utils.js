@@ -61,6 +61,17 @@ function isFunction (arg) {
 }
 
 /**
+ * TBD
+ * @param arg {*}
+ * @returns {Boolean}
+ * @private
+ */
+
+function isObject (arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+/**
  * Prints given warning in the console.
  * @param msg {String}
  * @private

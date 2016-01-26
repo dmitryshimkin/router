@@ -14,26 +14,26 @@ The implementation is based on the following ideas:
 
 - **Routable components**
 
-  In a typical server routing implementation there is only one controller that handles a given location.
+  In a typical implementation of the server routing there is only one controller that handles a given location.
   In contrast to the server this router is intended for a client-side SPA and
   supports any number of components that rendered on the same page at the same time according to a given location.
 
   In general when the router's location is changed there are some components that should be destroyed,
   some components that should be created, and some components that should be updated.
 
-  The router allows you to define a route (route is just a name and a location pattern),
+  The router allows you to define a route (the route is just a name and a location pattern),
   and get notifications when this route is started, updated, and stopped.
 
 - **Low level API only**
 
-  The implementation and API of the router should be as simple as possible.
-  The router does not have the integration with browser API.
+  The implementation and API should be as simple as possible.
+  The router does not provide any integration with browser API out of the box.
   The router does not support any sugar for patterns such as `/product/:id`.
-  However all this things can be easily added on higher level.
+  However all this things can be easily added on a higher level.
 
 - **Performance**
 
-  The router has a small footprint — only **1.28 KB** compressed and gzipped.
+  Small footprint — only **1.28 KB** compressed and gzipped.
 
 
 ## Browser support
@@ -176,7 +176,18 @@ router.addRoute('Author', /^\/authors\/(\d+)(\?.+)*$/);
 
 #### `onRoute`
 
-This function is called on each location change if router has routes that were affected.
+This function is called automatically on each location change
+if router has routes that were affected.
+
+Params:
+
+| Param    | Type       | Description                       |
+|:---------|:-----------|:----------------------------------|
+| evt      | RouteEvent | [RouteEvent](#RouteEvent) object  |
+
+Returns: `void`.
+
+Example:
 
 ```javascript
 router.addRoute('books', /^\/books(\?.+)*$/);
@@ -231,6 +242,18 @@ router.onRoute(function (evt) {
 router.setLocation('books'); // Throws error "Too many redirects"
 console.log(count);          // 120
 ```
+
+<a name="RouteEvent"/>
+### RouteEvent
+
+Event object that's passed to each `onRoute` callback.
+
+Properties:
+
+| Param    | Type              | Description                       |
+|:---------|:------------------|:----------------------------------|
+| type     | `String`          | Event type. Possible values: "routestart", "routechange", "routeend"  |
+| routes   | `Array.<Object>`  | List of matching routes.          |
 
 
 ## License
